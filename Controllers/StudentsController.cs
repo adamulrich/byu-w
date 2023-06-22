@@ -198,5 +198,26 @@ namespace byu_w.Controllers
                 return RedirectToAction(nameof(Delete), new { id = id, saveChangesError = true });
             }
         }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var student = await _context.Students
+                .Include(s => s.Enrollments)
+                    .ThenInclude(e => e.Course)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            return View(student);
+        }
     }
 }
