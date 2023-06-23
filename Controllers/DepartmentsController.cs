@@ -6,9 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using byu_w.Data;
+using System.Data.Common;
 using byu_w.Models;
 
-namespace byu_w
+namespace byu_w.Controllers
 {
     public class DepartmentsController : Controller
     {
@@ -34,10 +35,13 @@ namespace byu_w
                 return NotFound();
             }
 
+            string query = "SELECT * FROM Department WHERE DepartmentID = {0}";
             var department = await _context.Departments
+                .FromSqlRaw(query, id)
                 .Include(d => d.Administrator)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.DepartmentID == id);
+                .FirstOrDefaultAsync();
+
             if (department == null)
             {
                 return NotFound();
@@ -45,7 +49,6 @@ namespace byu_w
 
             return View(department);
         }
-
         // GET: Departments/Create
         public IActionResult Create()
         {
@@ -113,7 +116,7 @@ namespace byu_w
 
             _context.Entry(departmentToUpdate).Property("RowVersion").OriginalValue = rowVersion;
 
-            if (await TryUpdateModelAsync<Department>(
+            if (await TryUpdateModelAsync(
                 departmentToUpdate,
                 "",
                 s => s.Name, s => s.StartDate, s => s.Budget, s => s.InstructorID))
@@ -160,7 +163,7 @@ namespace byu_w
                                 + "edit operation was canceled and the current values in the database "
                                 + "have been displayed. If you still want to edit this record, click "
                                 + "the Save button again. Otherwise click the Back to List hyperlink.");
-                        departmentToUpdate.RowVersion = (byte[])databaseValues.RowVersion;
+                        departmentToUpdate.RowVersion = databaseValues.RowVersion;
                         ModelState.Remove("RowVersion");
                     }
                 }

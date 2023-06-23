@@ -34,30 +34,25 @@
             </div>
 
             <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <table>
-                        <tr>
-                            @{
-                                int cnt = 0;
-                                List<byu_w.Models.SchoolViewModels.AssignedCourseData> courses = ViewBag.Courses;
+                <div class="container">
+                                @{
+                                    
+                                    List<byu_w.Models.SchoolViewModels.AssignedCourseData> courses = ViewBag.Courses;
 
-                                foreach (var course in courses)
-                                {
-                                    if (cnt++ % 3 == 0)
+                                    foreach (var course in courses)
                                     {
-                                        @:</tr><tr>
+
+                                    @:<div class="flex-container" >
+                                            <input 
+                                                    type="checkbox"
+                                                   name="selectedCourses"
+                                                   value="@course.CourseID"
+                                                   @(Html.Raw(course.Assigned ? "checked=\"checked\"" : "")) />
+                                                   @course.CourseID @:  @course.Title
+                                       @:</div>
                                     }
-                                    @:<td>
-                                        <input type="checkbox"
-                                               name="selectedCourses"
-                                               value="@course.CourseID"
-                                               @(Html.Raw(course.Assigned ? "checked=\"checked\"" : "")) />
-                                               @course.CourseID @:  @course.Title
-                                        @:</td>
+                                
                                 }
-                                @:</tr>
-                            }
-                    </table>
                 </div>
             </div>
             <div class="form-group">
@@ -68,7 +63,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-success" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
